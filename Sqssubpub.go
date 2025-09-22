@@ -88,3 +88,21 @@ func(s *SqsSubPub)CreatePub()error{
 
 	return nil
 }
+
+
+func(s *SqsSubPub)Close()error{
+   
+	if(s.Subscriber !=nil){
+	err:= s.Subscriber.Close()
+
+	return err 
+	}
+
+	if(s.Publisher !=nil){
+		err:= s.Publisher.Close()
+
+		return err 
+	}
+
+	return nil
+}
