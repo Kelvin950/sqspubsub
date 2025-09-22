@@ -1,4 +1,4 @@
-package main
+package Sqssubpub
 
 
 import (
@@ -13,7 +13,7 @@ import (
 	transport "github.com/aws/smithy-go/endpoints"
 )
 
-type SqsSub struct {
+type SqsSubPub struct {
 	Subscriber *sqs.Subscriber
 	AwsConfig  *aws.Config
 	Logger     watermill.LoggerAdapter
@@ -21,13 +21,13 @@ type SqsSub struct {
 	SqsOpt  []func(*amazonsqs.Options)
 }
 
-func NewSqsSub(awsconfig *aws.Config ,logger watermill.LoggerAdapter) (*SqsSub, error) {
+func NewSqsSub(awsconfig *aws.Config ,logger watermill.LoggerAdapter) (*SqsSubPub, error) {
 
 	uri, err := url.Parse("http://localstack:4566")
 	if err != nil {
 		return nil, err
 	}
-	 SqsSub := &SqsSub{
+	 SqsSub := &SqsSubPub{
 		AwsConfig: awsconfig, 
 		Logger: logger,
 		SqsOpt: []func(*amazonsqs.Options){
@@ -44,7 +44,7 @@ func NewSqsSub(awsconfig *aws.Config ,logger watermill.LoggerAdapter) (*SqsSub, 
 	 return SqsSub ,err
 }
 
-func (s *SqsSub) CreateSqsSub() error {
+func (s *SqsSubPub) CreateSqsSub() error {
 
 	subscriberConfig := sqs.SubscriberConfig{
 		AWSConfig: *s.AwsConfig,
@@ -60,7 +60,7 @@ func (s *SqsSub) CreateSqsSub() error {
 	return nil
 }
 
-func (s *SqsSub) SetSubToTopic(topic string) (<-chan *message.Message, error) {
+func (s *SqsSubPub) SetSubToTopic(topic string) (<-chan *message.Message, error) {
 
 	messages, err := s.Subscriber.Subscribe(context.Background(), topic)
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *SqsSub) SetSubToTopic(topic string) (<-chan *message.Message, error) {
 
 }
 
-func(s *SqsSub)CreatePub()error{
+func(s *SqsSubPub)CreatePub()error{
 		publisherConfig := sqs.PublisherConfig{
 		AWSConfig: aws.Config{
 			Credentials: aws.AnonymousCredentials{},
