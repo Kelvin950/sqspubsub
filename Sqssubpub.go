@@ -23,7 +23,7 @@ type SqsSubPub struct {
 
 func NewSqsSub(awsconfig *aws.Config ,logger watermill.LoggerAdapter) (*SqsSubPub, error) {
 
-	uri, err := url.Parse("http://localstack:4566")
+	uri, err := url.Parse("http://localhost:4566")
 	if err != nil {
 		return nil, err
 	}
