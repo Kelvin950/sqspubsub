@@ -3,14 +3,14 @@ package Sqssubpub
 
 import (
 	"context"
-	"net/url"
+	
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-aws/sqs"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	amazonsqs "github.com/aws/aws-sdk-go-v2/service/sqs"
-	transport "github.com/aws/smithy-go/endpoints"
+
 )
 
 type SqsSubPub struct {
@@ -21,25 +21,16 @@ type SqsSubPub struct {
 	SqsOpt  []func(*amazonsqs.Options)
 }
 
-func NewSqsSub(awsconfig *aws.Config ,logger watermill.LoggerAdapter) (*SqsSubPub, error) {
+func NewSqsSub(awsconfig *aws.Config ,logger watermill.LoggerAdapter , Opts ... func(*amazonsqs.Options)) (*SqsSubPub, error) {
 
-	uri, err := url.Parse("http://localhost:4566")
-	if err != nil {
-		return nil, err
-	}
+	
 	 SqsSub := &SqsSubPub{
 		AwsConfig: awsconfig, 
 		Logger: logger,
-		SqsOpt: []func(*amazonsqs.Options){
-		amazonsqs.WithEndpointResolverV2(sqs.OverrideEndpointResolver{
-			Endpoint: transport.Endpoint{
-				URI: *uri,
-			},
-		}),
-	},
+		SqsOpt: Opts,
 	 }
 
-	err = SqsSub.CreateSqsSub() 
+	err := SqsSub.CreateSqsSub() 
 
 	 return SqsSub ,err
 }
@@ -87,6 +78,11 @@ func(s *SqsSubPub)CreatePub()error{
 	s.Publisher = publisher 
 
 	return nil
+}
+
+func(s *SqsSubPub)Publish(topic string , msg []byte)error{
+
+	return s.Publisher.Publish(topic ,message.NewMessage(watermill.NewUUID() , msg) )
 }
 
 
