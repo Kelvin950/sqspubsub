@@ -64,9 +64,7 @@ func (s *SqsSubPub) SetSubToTopic(topic string) (<-chan *message.Message, error)
 
 func(s *SqsSubPub)CreatePub()error{
 		publisherConfig := sqs.PublisherConfig{
-		AWSConfig: aws.Config{
-			Credentials: aws.AnonymousCredentials{},
-		},
+		AWSConfig: *s.AwsConfig,
 		OptFns: s.SqsOpt,
 	}
 
